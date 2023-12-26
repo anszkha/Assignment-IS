@@ -2,13 +2,18 @@
   "name": "assignment-is-main",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "all": "^0.0.0",
+    "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   }
 }
