@@ -5,7 +5,8 @@ const Project = require("./project");
 const Staff = require("./staff");
 const Visitor = require("./visitor");
 
-const MongoURI = process.env.MONGODB_URI
+
+const MongoURI = process.env.MONGODB_URI;
 
 MongoClient.connect(
 	// TODO: Connection yAs8O9sckieZkYeg
@@ -25,7 +26,7 @@ MongoClient.connect(
 
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
