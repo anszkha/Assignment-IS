@@ -28,6 +28,32 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000;
 
+const jwt = require('jsonwebtoken');
+function generateAccessToken(payload){
+	return jwt.sign(payload, "my-super-secret",{expiresIn: '60s'});
+}
+function verifyToken(req,res, next){
+	const authHeader = req.headers['authorization']
+	const token = authHeader && authHeader.split(' ')[1]
+
+	console.log('Received token:', token);
+
+	if(token == null) return res.sendStatus(401)
+
+	jwt.verify(token, "my-super-secret",(err, user) => {
+		console.log('Error during verification:', err);
+		if(err) return res.sendStatus(403)
+		req.user = user;
+		console.log('Verified user:', req.user);
+	
+
+		next();
+	});
+}
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 //const { Router } = require("express");
@@ -57,16 +83,6 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-
-app.get('/',verifyToken, (req, res) => {
-	res.send('Hello World')
-})
-
-app.get('/hello', (req, res) => {
-	res.send('Hello BENR3433')
-})
 
 /**
  * @swagger
@@ -747,27 +763,3 @@ app.get('/admin/only', async (req, res) => {
 	else
 		res.status(403).send('Unauthorized')
 })
-
-
-const jwt = require('jsonwebtoken');
-function generateAccessToken(payload){
-	return jwt.sign(payload, "my-super-secret",{expiresIn: '60s'});
-}
-function verifyToken(req,res, next){
-	const authHeader = req.headers['authorization']
-	const token = authHeader && authHeader.split(' ')[1]
-
-	console.log('Received token:', token);
-
-	if(token == null) return res.sendStatus(401)
-
-	jwt.verify(token, "my-super-secret",(err, user) => {
-		console.log('Error during verification:', err);
-		if(err) return res.sendStatus(403)
-		req.user = user;
-		console.log('Verified user:', req.user);
-	
-
-		next();
-	});
-}
