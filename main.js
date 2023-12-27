@@ -6,8 +6,6 @@ const Staff = require("./staff");
 const Visitor = require("./visitor");
 
 
-const MongoURI = process.env.MONGODB_URI;
-
 MongoClient.connect(
 	// TODO: Connection yAs8O9sckieZkYeg
 	"mongodb+srv://anis:enishawn0609@anszkha.yyibtgi.mongodb.net/?retryWrites=true&w=majority",
@@ -36,7 +34,6 @@ function verifyToken(req,res, next){
 	const authHeader = req.headers['authorization']
 	const token = authHeader && authHeader.split(' ')[1]
 
-	console.log('Received token:', token);
 
 	if(token == null) return res.sendStatus(401)
 
