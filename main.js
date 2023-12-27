@@ -5,6 +5,8 @@ const Project = require("./project");
 const Staff = require("./staff");
 const Visitor = require("./visitor");
 
+const MongoURI = process.env.MONGODB_URI
+
 MongoClient.connect(
 	// TODO: Connection yAs8O9sckieZkYeg
 	"mongodb://anis:yAs8O9sckieZkYeg@ac-nlxl7jy-shard-00-00.glzpa13.mongodb.net:27017,ac-nlxl7jy-shard-00-01.glzpa13.mongodb.net:27017,ac-nlxl7jy-shard-00-02.glzpa13.mongodb.net:27017/?replicaSet=atlas-es7nad-shard-0&ssl=true&authSource=admin",
