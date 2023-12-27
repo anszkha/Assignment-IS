@@ -10,7 +10,7 @@ const MongoURI = process.env.MONGODB_URI;
 
 MongoClient.connect(
 	// TODO: Connection yAs8O9sckieZkYeg
-	"mongodb+srv://anis:enishawn0609@anszkha.yyibtgi.mongodb.net/",
+	"mongodb+srv://anis:enishawn0609@anszkha.yyibtgi.mongodb.net/?retryWrites=true&w=majority",
 	{ useNewUrlParser: true },
 ).catch(err => {
 	console.error(err.stack)
