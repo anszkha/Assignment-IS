@@ -1,14 +1,13 @@
 const MongoClient = require("mongodb").MongoClient;
 const User = require("./user");
-const Document = require("./document");
-const Project = require("./project");
-const Staff = require("./staff");
 const Visitor = require("./visitor");
+const Employee = require("./employee");
+const Visitorlog = require("./visitorlog")
 
 
 MongoClient.connect(
-	// TODO: Connection yAs8O9sckieZkYeg
-	"mongodb+srv://anis:enishawn0609@anszkha.yyibtgi.mongodb.net/?retryWrites=true&w=majority",
+	// TODO: Connection bDzg3JhvVvZ59SME
+	"mongodb://anis:bDzg3JhvVvZ59SME@ac-tftxgfr-shard-00-00.yyibtgi.mongodb.net:27017,ac-tftxgfr-shard-00-01.yyibtgi.mongodb.net:27017,ac-tftxgfr-shard-00-02.yyibtgi.mongodb.net:27017/?replicaSet=atlas-97k8ff-shard-0&ssl=true&authSource=admin", 
 	{ useNewUrlParser: true },
 ).catch(err => {
 	console.error(err.stack)
@@ -16,49 +15,48 @@ MongoClient.connect(
 }).then(async client => {
 	console.log('Connected to MongoDB');
 	User.injectDB(client);
-	Document.injectDB(client);
-	Project.injectDB(client);
-	Staff.injectDB(client);
 	Visitor.injectDB(client);
+	Employee.injectDB(client);
+	Visitorlog.injectDB(client);
 })
 
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 
-const jwt = require('jsonwebtoken');
+const jwt = require ('jsonwebtoken');
 function generateAccessToken(payload){
-	return jwt.sign(payload, "my-super-secret",{expiresIn: '60s'});
+	return jwt.sign(payload, "secretcode", { expiresIn: '7d' });
 }
-function verifyToken(req,res, next){
+
+function verifyToken(req, res, next) {
 	const authHeader = req.headers['authorization']
 	const token = authHeader && authHeader.split(' ')[1]
 
+	if (token == null) return res.sendStatus(401)
 
-	if(token == null) return res.sendStatus(401)
+	jwt.verify(token, "secretcode", (err, user) => {
+		console.log(err);
 
-	jwt.verify(token, "my-super-secret",(err, user) => {
-		console.log('Error during verification:', err);
-		if(err) return res.sendStatus(403)
-		req.user = user;
-		console.log('Verified user:', req.user);
-	
+		if (err) return res.sendStatus(403)
 
-		next();
-	});
+		req.user = user
+
+		next()
+	})
 }
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
-//const { Router } = require("express");
 const options = {
 	definition: {
 		openapi: '3.0.0',
 		info: {
-			title: 'Office Management System',
+			title: 'Office Visitor Management System',
 			version: '1.0.0',
 		},
 		components:{
@@ -75,57 +73,18 @@ const options = {
 		}]
 		}
 	},
-	apis: ['./main.js'], // files containing annotations as above
+	apis: ['./main.js'], 
 };
 const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
 /**
  * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         _id: 
- *           type: string
- *         id: 
- *           type: string
- *         phone: 
- *           type: string
- */
-
-/**
- * @swagger
- * tags:
- *   name: Admin
- */
-
-/**
- * @swagger
- * tags:
- *   name: Staff
- */
-
-/**
- * @swagger
- * tags:
- *   name: Document Server
- */
-
-/**
- * @swagger
- * tags:
- *   name: Project
- */
-
-/**
- * @swagger
- * /register/document:
+ * /login/user:
  *   post:
- *     description: File Register
- *     tags: [Document Server]
+ *     description: User Login
+ *     tags:
+ *     - Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -133,61 +92,46 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *           schema: 
  *             type: object
  *             properties:
- *               id: 
+ *               username: 
  *                 type: string
- *               FileName: 
+ *               password: 
  *                 type: string
  *     responses:
  *       200:
- *         description: Successful Register new user
+ *         description: Successful login
  *       401:
  *         description: Invalid username or password
  */
- app.post('/register/document', async (req, res) => {
+
+app.post('/login/user', async (req, res) => {
 	console.log(req.body);
-	const reg = await Document.register(
-		req.body.id, 
-		req.body.FileName, 
-	);
-	console.log(reg);
-	res.json({reg})
+
+	let user = await User.login(req.body.username, req.body.password);
+	
+	if (user.status == ("invalid username" || "invalid password")) {
+		res.status(401).send("invalid username or password");
+		return
+	}
+
+
+	res.status(200).json({
+		username: user.username,
+		name: user.Name,
+		officerno: user.officerno,
+		rank: user.Rank,
+		phone: user.Phone,
+		token: generateAccessToken({ rank: user.Rank })
+
+	});
 })
 
 /**
  * @swagger
- * /document/{id}:
- *   get:
- *     description: Get document by id
- *     tags: [Document Server]
- *     parameters:
- *       - in: path
- *         name: id 
- *         schema: 
- *           type: string
- *         required: true
- *         description: Document id
- *     responses:
- *       200:
- *         description: Search successful
- *       401:
- *         description: Invalid id 
- */
-
- app.get('/document/:id', async (req, res) => {
-	console.log(req.documents);
-	const cari = await Document.find(req.params.id);
-	if (cari)
-		res.status(200).json(cari)
-	else 
-		res.status(404).send("Invalid File Id")
-});
-
-/**
- * @swagger
- * /register/project:
+ * /login/visitor:
  *   post:
- *     description: Project Register
- *     tags: [Project]
+ *     description: Visitor Login
+ *     tags:
+ *     - Authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -195,72 +139,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *           schema: 
  *             type: object
  *             properties:
- *               id: 
- *                 type: string
- *               ProjectName: 
- *                 type: string
- *               staff:
- *                 type: string
- *     responses:
- *       200:
- *         description: Search successful
- *       401:
- *         description: Invalid id 
- */
- app.post('/register/project', async (req, res) => {
-	console.log(req.body);
-	const reg = await Project.register(
-		req.body.id, 
-		req.body.ProjectName,
-		req.body.staff, 
-	);
-	console.log(reg);
-	res.json({reg})
-})
-
-/**
- * @swagger
- * /project/{id}:
- *   get:
- *     description: Get project by id
- *     tags: [Project]
- *     parameters:
- *       - in: path
- *         name: id 
- *         schema: 
- *           type: string
- *         required: true
- *         description: Project id
- *     responses:
- *       200:
- *         description: Search successful
- *       401:
- *         description: Invalid id
- */
-
- app.get('/project/:id', async (req, res) => {
-	console.log(req.project);
-	const cari = await Project.find(req.params.id);
-	if (cari)
-		res.status(200).json(cari)
-	else 
-		res.status(404).send("Invalid Project Id")
-});
-
-/**
- * @swagger
- * /login/admin:
- *   post:
- *     description: User Login
- *     tags: [Admin]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
+ *               username: 
  *                 type: string
  *               password: 
  *                 type: string
@@ -268,36 +147,36 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *       200:
  *         description: Successful login
  *       401:
- *         description: Invalid id or password
+ *         description: Invalid username or password
  */
-app.post('/login/admin', async (req, res) => {
+
+app.post('/login/visitor', async (req, res) => {
 	console.log(req.body);
 
-	let user = await User.login(req.body.id, req.body.password);
+	let user = await Visitor.login(req.body.username, req.body.password);
 
-	if (user.status == ('invalid id' || 'invalid password')) {
-		res.status(401).send("Invalid id or password");
+	if (user.status == ("invalid username" || "invalid password")) {
+		res.status(401).send("invalid username or password");
 		return
 	}
-	if (user.status == ('invalid password')) {
-		res.status(401).send("Invalid id or password");
-		return
-	}	
-	res.status(200).json({
-		_id: user._id,
-		id: user.id,
-		name: user.name,
-		division: user.division,
-		token: generateAccessToken({id: user.id,role: user.role}),
 
+	res.status(200).json({
+		username: user.username,
+		name: user.Name,
+		age: user.Age,
+		gender: user.Gender,
+		reason: user.Reason,
+		token: generateAccessToken({ username: user.username })
 	});
 })
+
 /**
  * @swagger
- * /login/staff:
+ * /register/user:
  *   post:
- *     description: User Login
- *     tags: [Staff]
+ *     description: User Registration
+ *     tags:
+ *     - Registration
  *     requestBody:
  *       required: true
  *       content:
@@ -305,134 +184,41 @@ app.post('/login/admin', async (req, res) => {
  *           schema: 
  *             type: object
  *             properties:
- *               id: 
- *                 type: string
- *               password: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful login
- *       401:
- *         description: Invalid id or password
- */
- app.post('/login/staff', async (req, res) => {
-	console.log(req.body);
-
-	let staff = await Staff.login(req.body.id, req.body.password);
-
-	if (staff.status == ('invalid id')) {
-		res.status(401).send("Invalid id or password");
-		return
-	}
-	if (staff.status == ('invalid password')) {
-		res.status(401).send("Invalid id or password");
-		return
-	}
-	res.status(200).json({
-		_id: staff._id,
-		id: staff.id,
-		name: staff.name,
-		division: staff.division,
-	});
-})
-/**
- * @swagger
- * /register/admin:
- *   post:
- *     description: User Register
- *     tags: [Admin]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
+ *               username: 
  *                 type: string
  *               password: 
  *                 type: string
  *               name: 
  *                 type: string
- *               division:
+ *               officerno:
  *                 type: string
- *               rank: 
+ *               rank:
  *                 type: string
- *               phone: 
- *                 type: string
- *               role:
+ *               phone:
  *                 type: string
  *     responses:
  *       200:
- *         description: Successful Register New Id
+ *         description: Successful registered
  *       401:
- *         description: Invalid id or password
+ *         description: There is an error during registration , Please try again
  */
-app.post('/register/admin', async (req, res) => {
+
+app.post('/register/user', async (req, res) => {
 	console.log(req.body);
-	const reg = await User.register(
-		req.body.id, 
-		req.body.password, 
-		req.body.name, 
-		req.body.division, 
-		req.body.rank, 
-		req.body.phone, 
-		req.body.role,
-	);
+	
+	const reg = await User.register(req.body.username, req.body.password, req.body.name, req.body.officerno, req.body.rank, req.body.phone);
 	console.log(reg);
-	res.json({reg})
-})
-/**
- * @swagger
- * /register/staff:
- *   post:
- *     description: User Register
- *     tags: [Staff]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
- *                 type: string
- *               password: 
- *                 type: string
- *               name: 
- *                 type: string
- *               division:
- *                 type: string
- *               rank: 
- *                 type: string
- *               phone: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful Register New Id
- *       401:
- *         description: Invalid id or password
- */
- app.post('/register/staff', async (req, res) => {
-	console.log(req.body);
-	const reg = await Staff.register(
-		req.body.id, 
-		req.body.password, 
-		req.body.name, 
-		req.body.division, 
-		req.body.rank, 
-		req.body.phone,
-	);
-	console.log(reg);
+
 	res.json({reg})
 })
 
 /**
  * @swagger
- * /update/admin:
- *   patch:
- *     description: User Update
- *     tags: [Admin]
+ * /register/visitor:
+ *   post:
+ *     description: Visitor Registration
+ *     tags:
+ *     - Registration
  *     requestBody:
  *       required: true
  *       content:
@@ -440,323 +226,475 @@ app.post('/register/admin', async (req, res) => {
  *           schema: 
  *             type: object
  *             properties:
- *               id: 
+ *               username: 
  *                 type: string
  *               password: 
  *                 type: string
  *               name: 
  *                 type: string
- *               division:
+ *               age:
+ *                 type: integer
+ *               gender:
  *                 type: string
- *               rank: 
+ *               reason:
  *                 type: string
- *               phone: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful Update user
- *       401:
- *         description: Invalid id or password
- */
-app.patch('/update/admin', async (req, res) => {
-	console.log(req.body);
-
-	const user = await User.login(req.body.id, req.body.password);
-
-	if (user.status == ('invalid id' || 'invalid password')) {
-		res.status(401).send("Invalid id or password");
-		return
-	}
-	const update =await User.update(
-		req.body.id,
-		req.body.name, 
-		req.body.division, 
-		req.body.rank, 
-		req.body.phone
-	);
-	res.json({update})
-})
-
-/**
- * @swagger
- * /update/staff:
- *   patch:
- *     description: User Update
- *     tags: [Staff]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
- *                 type: string
- *               password: 
- *                 type: string
- *               name: 
- *                 type: string
- *               division:
- *                 type: string
- *               rank: 
- *                 type: string
- *               phone: 
+ *               telno:
  *                 type: string
  *     responses:
  *       200:
- *         description: Successful Update user
+ *         description: Successful registered
  *       401:
- *         description: Invalid id or password
+ *         description: There is an error during registration , Please try again
  */
- app.patch('/update/staff', async (req, res) => {
+
+app.post('/register/visitor', async (req, res) => {
 	console.log(req.body);
 
-	let staff = await Staff.login(req.body.id, req.body.password);
-
-	if (staff.status == ('invalid id' || 'invalid password')) {
-		res.status(401).send("Invalid id or password");
-		return
-	}
-	const update =await Staff.update(
-		req.body.id,
-		req.body.name, 
-		req.body.division, 
-		req.body.rank, 
-		req.body.phone
-	);
-	res.json({update})
+		const reg = await Visitor.register(req.body.username, req.body.password, req.body.name, req.body.age, req.body.gender, req.body.reason, req.body.telno);
+		console.log(reg);
+	
+	res.json({reg})
 })
 
 app.use(verifyToken);
 
 /**
  * @swagger
- * /staff/{id}:
- *   get:
- *     security:
- *      - jwt: []    
- *     description: Get staff by id
- *     tags: [Admin]
- *     parameters:
- *       - in: path
- *         name: id 
- *         schema: 
- *           type: string
- *         required: true
- *         description: Staff id
- *     responses:
- *       200:
- *         description: Search successful
- *       401:
- *         description: Invalid id
- */
-
-app.get('/staff/:id', async (req, res) => {
-	console.log(req.staff);
-	const cari = await Staff.find(req.params.id);
-	if (cari)
-		res.status(200).json(cari)
-	else 
-		res.status(404).send("Invalid Staff Id")
-});
-/**
- * @swagger
- * /delete/admin:
- *   delete:
- *     security:
- *      - jwt: []
- *     description: Delete User
- *     tags: [Admin]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Delete successful
- *       401:
- *         description: Invalid id
- */
-app.delete('/delete/admin',async (req,res) => {
-	console.log(req.body);
-	let buang = await User.delete(req.body.id);
-	res.json({buang})
-})
-
-/**
- * @swagger
- * /delete/staff:
- *   delete:
- *     security:
- *      - jwt: []
- *     description: Delete User
- *     tags: [Staff]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Delete successful
- *       401:
- *         description: Invalid id
- */
- app.delete('/delete/staff',async (req,res) => {
-	console.log(req.body);
-	let buang = await Staff.delete(req.body.id);
-	res.json({buang})
-})
-
-/**
- * @swagger
- * /delete/document:
- *   delete:
- *     security:
- *      - jwt: []
- *     description: Delete File
- *     tags: [Document Server]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema: 
- *             type: object
- *             properties:
- *               id: 
- *                 type: string
- *     responses:
- *       200:
- *         description: Delete successful
- *       401:
- *         description: Invalid id
- */
- app.delete('/delete/document',async (req,res) => {
-	console.log(req.body);
-	let buang = await Document.delete(req.body.id);
-	res.json({buang})
-})
-
-// Visitor Management Endpoints
-/**
- * @swagger
- * tags:
- *   name: Visitor
- */
-
-/**
- * @swagger
- * /register/visitor:
+ * /register/Visitorlog:
  *   post:
- *     description: Register a new visitor
- *     tags: [Visitor]
+ *     security:
+ *      - jwt: []
+ *     description: Create Visitorlog
+ *     tags:
+ *     - Registration
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
- *           schema:
+ *           schema: 
  *             type: object
  *             properties:
- *               id:
+ *               logno:
+ *                 type: integer
+ *               username: 
  *                 type: string
- *               name:
+ *               inmateno: 
  *                 type: string
- *               company:
+ *               dateofvisit:
+ *                 type: string
+ *               timein:
+ *                 type: string
+ *               timeout:
  *                 type: string
  *               purpose:
  *                 type: string
+ *               officerno:
+ *                 type: string
+
  *     responses:
  *       200:
- *         description: Successful registration
+ *         description: Successful registered
  *       401:
- *         description: Invalid data
+ *         description: There is an error during registration , Please try again
  */
-app.post('/register/visitor', async (req, res) => {
+
+
+ app.post('/register/visitorlog', async (req, res) => {
 	console.log(req.body);
-	const reg = await Visitor.register(
-	  req.body.id,
-	  req.body.name,
-	  req.body.company,
-	  req.body.purpose,
-	);
-	console.log(reg);
-	res.json({ reg });
-  });
-  
-  /**
-   * @swagger
-   * /visitor/{id}:
-   *   get:
-   *     description: Get visitor by id
-   *     tags: [Visitor]
-   *     parameters:
-   *       - in: path
-   *         name: id 
-   *         schema: 
-   *           type: string
-   *         required: true
-   *         description: Visitor id
-   *     responses:
-   *       200:
-   *         description: Search successful
-   *       401:
-   *         description: Invalid id
-   */
-  app.get('/visitor/:id', async (req, res) => {
-	console.log(req.visitor);
-	const findVisitor = await Visitor.find(req.params.id);
-	if (findVisitor)
-	  res.status(200).json(findVisitor)
-	else
-	  res.status(404).send("Invalid Visitor Id")
-  });
-  
-  /**
-   * @swagger
-   * /delete/visitor:
-   *   delete:
-   *     security:
-   *      - jwt: []
-   *     description: Delete Visitor
-   *     tags: [Visitor]
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema: 
-   *             type: object
-   *             properties:
-   *               id: 
-   *                 type: string
-   *     responses:
-   *       200:
-   *         description: Delete successful
-   *       401:
-   *         description: Invalid id
-   */
-  app.delete('/delete/visitor', async (req, res) => {
+
+	if (req.user.rank == "officer" || "security"){
+		const reg = await Visitorlog.register(req.body.logno, req.body.username, req.body.employeeno, req.body.dateofvisit, req.body.timein, req.body.timeout, req.body.purpose, req.body.officerno);
+		res.status(200).send(reg)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /register/employee:
+ *   post:
+ *     security:
+ *      - jwt: []
+ *     description: Employee Registration
+ *     tags:
+ *     - Registration 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               employeeno: 
+ *                 type: string
+ *               firstname: 
+ *                 type: string
+ *               lastname: 
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               gender:
+ *                 type: string
+ *               position:
+ *                 type: string
+ *              
+ *     responses:
+ *       200:
+ *         description: Successful registered
+ *       401:
+ *         description: There is an error during registration , Please try again
+ */
+
+ app.post('/register/employee', async (req,res)=>{
+	console.log(req.body)
+
+	if (req.user.rank == "officer"){
+		const reg = await Employee.register(req.body.employeeno, req.body.firstname, req.body.lastname, req.body.age, req.body.gender, req.body.position );
+		res.status(200).send(reg)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+
+})
+
+/**
+ * @swagger
+ * /user/update:
+ *   patch:
+ *     security:
+ *      - jwt: []
+ *     description: User Update
+ *     tags:
+ *     - Modification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               name: 
+ *                 type: string
+ *               officerno:
+ *                 type: string
+ *               rank:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful updated
+ *       401:
+ *         description: There is an error during updating , Please try again
+ */
+
+app.patch('/user/update', async (req, res) => {
 	console.log(req.body);
-	const deleteVisitor = await Visitor.delete(req.body.id);
-	res.json({ deleteVisitor });
-  });
+
+	if (req.user.rank == "officer"){
+		const update = await User.update(req.body.username, req.body.name, req.body.officerno, req.body.rank, req.body.phone);
+		res.status(200).send(update)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+
+})
+
+/**
+ * @swagger
+ * /visitor/update:
+ *   patch:
+ *     security:
+ *      - jwt: []
+ *     description: Visitor Update
+ *     tags:
+ *     - Modification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               password: 
+ *                 type: string
+ *               name: 
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               gender:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *               telno:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful updated
+ *       401:
+ *         description: There is an error during updating , Please try again
+ */
+
+app.patch('/visitor/update', async (req, res) => {
+	console.log(req.body);
+
+	if (req.user.rank == "officer"){
+		const update = await Visitor.update(req.body.username, req.body.name, req.body.age, req.body.gender, req.body.reason, req.body.telno);
+		res.status(200).send(update)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /employee/update:
+ *   patch:
+ *     security:
+ *      - jwt: []
+ *     description: Employee Update
+ *     tags:
+ *     - Modification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               employeeno: 
+ *                 type: string
+ *               firstname: 
+ *                 type: string
+ *               lastname: 
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               gender:
+ *                 type: string
+ *               reason:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful updated
+ *       401:
+ *         description: There is an error during updating , Please try again
+ */
+
+ app.patch('/employee/update', async (req, res) => {
+	console.log(req.body);
+	if (req.user.rank == "officer"){
+		const update = await Employee.update( req.body.employeeno, req.body.firstname, req.body.lastname, req.body.age, req.body.gender, req.body.reason);
+		res.status(200).send(update)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /visitorlog/update:
+ *   patch:
+ *     security:
+ *      - jwt: []
+ *     description: Visitorlog Update
+ *     tags:
+ *     - Modification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               logno:
+ *                 type: integer
+ *               inmateno: 
+ *                 type: string
+ *               dateofvisit:
+ *                 type: string
+ *               timein:
+ *                 type: string
+ *               timeout:
+ *                 type: string
+ *               purpose:
+ *                 type: string
+ *               officerno:
+ *                 type: string
+
+ *     responses:
+ *       200:
+ *         description: Successful updated
+ *       401:
+ *         description: There is an error during updating , Please try again
+ */
+
+ app.patch('/visitorlog/update', async (req, res) => {
+	console.log(req.body);
+
+	if (req.user.username == req.body.username){
+		const update = await Visitorlog.update(req.body.logno, req.body.employeeno, req.body.dateofvisit, req.body.timein, req.body.timeout, req.body.purpose, req.body.officerno);
+		res.status(200).send(update)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /delete/user:
+ *   delete:
+ *     security:
+ *      - jwt: []
+ *     description: Delete User
+ *     tags:
+ *     - Remove(delete)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               
+ *     responses:
+ *       200:
+ *         description: Successful delete
+ *       401:
+ *         description: There is an error during deleting , Please try again
+ */
+
+app.delete('/delete/user', async (req, res) => {
+	if (req.user.rank == "officer"){
+		const del = await User.delete(req.body.username)
+		res.status(200).send(del)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /delete/visitor:
+ *   delete:
+ *     security:
+ *      - jwt: []
+ *     description: Delete Visitor
+ *     tags:
+ *     - Remove(delete)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               username: 
+ *                 type: string
+ *               
+ *     responses:
+ *       200:
+ *         description: Successful deleted
+ *       401:
+ *         description: There is an error during deleting , Please try again
+ */
+
+app.delete('/delete/visitor', async (req, res) => {
+	if (req.user.rank == "officer"){
+		const del = await Visitor.delete(req.body.username)
+		res.status(200).send(del)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /delete/employee:
+ *   delete:
+ *     security:
+ *      - jwt: []
+ *     description: Delete Employee
+ *     tags:
+ *     - Remove(delete)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               employeeno: 
+ *                 type: string
+ *               
+ *     responses:
+ *       200:
+ *         description: Successful deleted
+ *       401:
+ *         description: There is an error during deleting , Please try again
+ */
+
+ app.delete('/delete/employee', async (req, res) => {
+	if (req.user.rank == "officer"){
+		const del = await Employee.delete(req.body.employeeno)
+		res.status(200).send(del)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
+
+/**
+ * @swagger
+ * /delete/visitorlog:
+ *   delete:
+ *     security:
+ *      - jwt: []
+ *     description: Delete Visitorlog
+ *     tags:
+ *     - Remove(delete)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties:
+ *               logno: 
+ *                 type: integer
+ *               
+ *     responses:
+ *       200:
+ *         description: Successful delete
+ *       401:
+ *         description: There is an error during deleting , Please try again
+ */
+
+ app.delete('/delete/visitorlog', async (req, res) => {
+	if (req.user.rank == "officer" || "security"){
+		const del = await Visitorlog.delete(req.body.logno)
+		res.status(200).send(del)
+	}
+	else{
+		res.status(403).send("You are unauthorized")
+	}
+})
 
 app.listen(port, () => {
-	console.log(`Example app listening on port ${port}`)
-})
-app.get('/admin/only', async (req, res) => {
-	console.log(req.user);
-
-	if (req.user.role == 'admin')
-		res.status(200).send('Admin only')
-	else
-		res.status(403).send('Unauthorized')
+	console.log(`Example app listening at http://localhost:3000`)
 })

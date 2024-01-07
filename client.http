@@ -1,133 +1,84 @@
-# Register a new document
-POST http://localhost:3000/register/document
+@host = http://localhost:3000
+@token = your_jwt_token_here
+
+### User Login
+POST {{host}}/login/user HTTP/1.1
 Content-Type: application/json
 
 {
-  "id": "document123",
-  "FileName": "example.txt"
+    "username": "user123",
+    "password": "password123"
 }
-###
-# Retrieve a document by ID
-GET http://localhost:3000/document/document123
 
-###
-# Register a new project
-POST http://localhost:3000/register/project
+### Visitor Login
+POST {{host}}/login/visitor HTTP/1.1
 Content-Type: application/json
 
 {
-  "id": "project123",
-  "ProjectName": "New Project",
-  "staff": "staff123"
+    "username": "visitor123",
+    "password": "password123"
 }
 
-###
-# Retrieve a project by ID
-GET http://localhost:3000/project/project123
-
-###
-# Admin login
-POST http://localhost:3000/login/admin
+### Register User
+POST {{host}}/register/user HTTP/1.1
 Content-Type: application/json
 
 {
-  "id": "adminID",
-  "password": "adminPassword"
+    "username": "newuser",
+    "password": "newpassword",
+    "name": "John Doe",
+    "officerno": "1234",
+    "rank": "Manager",
+    "phone": "1234567890"
 }
 
-###
-# Staff login
-POST http://localhost:3000/login/staff
+### Register Visitor
+POST {{host}}/register/visitor HTTP/1.1
 Content-Type: application/json
 
 {
-  "id": "staffID",
-  "password": "staffPassword"
+    "username": "newvisitor",
+    "password": "visitorpassword",
+    "name": "Jane Doe",
+    "age": 30,
+    "gender": "Female",
+    "reason": "Meeting",
+    "telno": "0987654321"
 }
 
-###
-# Admin registration
-POST http://localhost:3000/register/admin
+### Register Employee
+POST {{host}}/register/employee HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "id": "newAdminID",
-  "password": "newAdminPassword",
-  "name": "New Admin",
-  "division": "Admin Division",
-  "rank": "Admin Rank",
-  "phone": "Admin Phone",
-  "role": "admin"
+    "employeeno": "emp123",
+    "firstname": "Alice",
+    "lastname": "Smith",
+    "age": 28,
+    "gender": "Female",
+    "position": "Developer"
 }
 
-###
-# Staff registration
-POST http://localhost:3000/register/staff
+### Update Visitor Information
+PATCH {{host}}/visitor/update HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "id": "newStaffID",
-  "password": "newStaffPassword",
-  "name": "New Staff",
-  "division": "Staff Division",
-  "rank": "Staff Rank",
-  "phone": "Staff Phone"
+    "username": "visitor123",
+    "name": "Updated Name",
+    "age": 31,
+    "gender": "Female",
+    "reason": "Conference",
+    "telno": "1234567890"
 }
 
-###
-# Update admin
-PATCH http://localhost:3000/update/admin
+### Delete Employee
+DELETE {{host}}/delete/employee HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "id": "adminToUpdate",
-  "password": "newAdminPassword",
-  "name": "Updated Admin",
-  "division": "Updated Admin Division",
-  "rank": "Updated Admin Rank",
-  "phone": "Updated Admin Phone"
+    "employeeno": "emp123"
 }
-
-###
-# Update staff
-PATCH http://localhost:3000/update/staff
-Content-Type: application/json
-
-{
-  "id": "staffToUpdate",
-  "password": "newStaffPassword",
-  "name": "Updated Staff",
-  "division": "Updated Staff Division",
-  "rank": "Updated Staff Rank",
-  "phone": "Updated Staff Phone"
-}
-
-###
-# Register a new visitor
-POST http://localhost:3000/register/visitor
-Content-Type: application/json
-
-{
-  "id": "visitor123",
-  "name": "John Doe",
-  "company": "ABC Inc.",
-  "purpose": "Meeting"
-}
-
-###
-# Get visitor by ID
-GET http://localhost:3000/visitor/visitor123
-
-###
-# Delete a visitor
-DELETE http://localhost:3000/delete/visitor
-Content-Type: application/json
-
-{
-  "id": "visitor123"
-}
-
-###
-# Get staff by ID (requires authentication)
-GET http://localhost:3000/staff/staffID
-Authorization: Bearer 
