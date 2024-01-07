@@ -30,21 +30,21 @@ function generateAccessToken(payload){
 }
 
 function verifyToken(req, res, next) {
-	const authHeader = req.headers['authorization']
-	const token = authHeader && authHeader.split(' ')[1]
-
-	if (token == null) return res.sendStatus(401)
-
+	const authHeader = req.headers['authorization'];
+	const token = authHeader && authHeader.split(' ')[1];
+  
+	if (!token) return res.sendStatus(401);
+  
 	jwt.verify(token, "secretcode", (err, user) => {
-		console.log(err);
-
-		if (err) return res.sendStatus(403)
-
-		req.user = user
-
-		next()
-	})
-}
+	  if (err) {
+		console.error(err);
+		return res.sendStatus(403); // Forbidden if token is invalid
+	  }
+  
+	  req.user = user;
+	  next();
+	});
+  }
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -347,7 +347,7 @@ app.use(verifyToken);
  *         description: There is an error during registration , Please try again
  */
 
- app.post('/register/employee', async (req,res)=>{
+ app.post('/register/employee',verifyToken , async (req,res)=>{
 	console.log(req.body)
 
 	if (req.user.rank == "officer"){
@@ -519,7 +519,7 @@ app.patch('/visitor/update', async (req, res) => {
  *             properties:
  *               logno:
  *                 type: integer
- *               inmateno: 
+ *               employeeno: 
  *                 type: string
  *               dateofvisit:
  *                 type: string

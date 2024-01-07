@@ -1,84 +1,177 @@
-@host = http://localhost:3000
-@token = your_jwt_token_here
-
-### User Login
-POST {{host}}/login/user HTTP/1.1
+###
+# User Registration Request
+###
+POST http://localhost:3000/register/user
 Content-Type: application/json
 
 {
-    "username": "user123",
-    "password": "password123"
+  "username": "testuser",
+  "password": "testpassword",
+  "name": "Test User",
+  "officerno": "12345",
+  "rank": "officer",
+  "phone": "123-456-7890"
 }
 
-### Visitor Login
-POST {{host}}/login/visitor HTTP/1.1
+###
+# User Login Request
+###
+POST http://localhost:3000/login/user
 Content-Type: application/json
 
 {
-    "username": "visitor123",
-    "password": "password123"
+  "username": "testuser",
+  "password": "testpassword"
 }
 
-### Register User
-POST {{host}}/register/user HTTP/1.1
+###
+# Visitor Registration Request
+###
+POST http://localhost:3000/register/visitor
 Content-Type: application/json
 
 {
-    "username": "newuser",
-    "password": "newpassword",
-    "name": "John Doe",
-    "officerno": "1234",
-    "rank": "Manager",
-    "phone": "1234567890"
+  "username": "testvisitor",
+  "password": "testpassword",
+  "name": "Test Visitor",
+  "age": 25,
+  "gender": "Male",
+  "reason": "Meeting",
+  "telno": "987-654-3210"
 }
 
-### Register Visitor
-POST {{host}}/register/visitor HTTP/1.1
+###
+# Visitor Login Request
+###
+POST http://localhost:3000/login/visitor
 Content-Type: application/json
 
 {
-    "username": "newvisitor",
-    "password": "visitorpassword",
-    "name": "Jane Doe",
-    "age": 30,
-    "gender": "Female",
-    "reason": "Meeting",
-    "telno": "0987654321"
+  "username": "testvisitor",
+  "password": "testpassword"
 }
 
-### Register Employee
-POST {{host}}/register/employee HTTP/1.1
+###
+# Visitorlog Registration Request (requires authentication)
+###
+POST http://localhost:3000/register/visitorlog
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R2aXNpdG9yIiwiaWF0IjoxNzA0NjE3MTU2LCJleHAiOjE3MDUyMjE5NTZ9.wz9jmoBtyfpMqUfY_WxgGC2mU0-klzq7C08giaSbUbc
 
 {
-    "employeeno": "emp123",
-    "firstname": "Alice",
-    "lastname": "Smith",
-    "age": 28,
-    "gender": "Female",
-    "position": "Developer"
+  "logno": 1,
+  "username": "testvisitor",
+  "employeeno": "E12345",
+  "dateofvisit": "2024-01-07",
+  "timein": "09:00 AM",
+  "timeout": "10:00 AM",
+  "purpose": "Meeting",
+  "officerno": "Office 123"
 }
 
-### Update Visitor Information
-PATCH {{host}}/visitor/update HTTP/1.1
+###
+# User Update Request (requires authentication)
+###
+PATCH http://localhost:3000/user/update
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
 
 {
-    "username": "visitor123",
-    "name": "Updated Name",
-    "age": 31,
-    "gender": "Female",
-    "reason": "Conference",
-    "telno": "1234567890"
+  "username": "testuser",
+  "name": "Updated User",
+  "officerno": "54321",
+  "rank": "manager",
+  "phone": "987-654-3210"
 }
 
-### Delete Employee
-DELETE {{host}}/delete/employee HTTP/1.1
+###
+# Visitor Update Request (requires authentication)
+###
+PATCH http://localhost:3000/visitor/update
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
 
 {
-    "employeeno": "emp123"
+  "username": "testvisitor",
+  "name": "Updated Visitor",
+  "age": 30,
+  "gender": "Female",
+  "reason": "Appointment",
+  "telno": "123-456-7890"
+}
+
+###
+# Employee Registration Request (requires authentication)
+###
+POST http://localhost:3000/register/employee
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+
+{
+  "employeeno": "E54321",
+  "firstname": "John",
+  "lastname": "Doe",
+  "age": 35,
+  "gender": "Male",
+  "position": "Manager"
+}
+
+###
+# Employee Update Request (requires authentication)
+###
+PATCH http://localhost:3000/employee/update
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+
+{
+  "employeeno": "E54321",
+  "firstname": "Updated John",
+  "lastname": "Updated Doe",
+  "age": 36,
+  "gender": "Male",
+  "position": "Senior Manager"
+}
+
+###
+# Delete User Request (requires authentication)
+###
+DELETE http://localhost:3000/delete/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+
+{
+  "username": "testuser"
+}
+
+###
+# Delete Visitor Request (requires authentication)
+###
+DELETE http://localhost:3000/delete/visitor
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+
+{
+  "username": "testvisitor"
+}
+
+###
+# Delete Employee Request (requires authentication)
+###
+DELETE http://localhost:3000/delete/employee
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+
+{
+  "employeeno": "E54321"
+}
+
+###
+# Delete Visitorlog Request (requires authentication)
+###
+DELETE http://localhost:3000/delete/visitorlog
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R2aXNpdG9yIiwiaWF0IjoxNzA0NjE3MTU2LCJleHAiOjE3MDUyMjE5NTZ9.wz9jmoBtyfpMqUfY_WxgGC2mU0-klzq7C08giaSbUbc
+
+{
+  "logno": 1
 }
