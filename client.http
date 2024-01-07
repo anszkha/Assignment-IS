@@ -175,3 +175,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 {
   "logno": 1
 }
+
+### Get All Visitors (for authenticated hosts)
+GET http://localhost:3000/api/visitors
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y

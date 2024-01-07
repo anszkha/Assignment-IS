@@ -75,6 +75,11 @@ class Visitor {
 			return { status: "Visitor deleted!"}
 		}
 
+		static async getAllVisitors() {
+			const allVisitors = await visitors.find({}).toArray();
+			return allVisitors;
+		  }
+		  
 	}
 
 

@@ -703,6 +703,60 @@ app.delete('/delete/visitor', async (req, res) => {
 	}
 })
 
+/**
+ * @swagger
+ * /api/visitors:
+ *   get:
+ *     description: Get all visitors (for authenticated hosts)
+ *     tags:
+ *       - Visitors
+ *     security:
+ *       - jwt: [] # Add the JWT security requirement for this endpoint
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   username:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   age:
+ *                     type: integer
+ *                   gender:
+ *                     type: string
+ *                   reason:
+ *                     type: string
+ *                   telno:
+ *                     type: string
+ *       '403':
+ *         description: Access denied (for unauthorized users)
+ *       '500':
+ *         description: Internal server error
+ */
+
+// Define a route for authenticated hosts to get all visitors
+app.get('/api/visitors', verifyToken, async (req, res) => {
+	try {
+		if (req.user.rank == "officer" || "security") {
+		// Ensure that only hosts can access this route
+		const allVisitors = await Visitor.getAllVisitors();
+		res.status(200).json(allVisitors);
+	  } else {
+		res.status(403).send('Access denied. Only users are allowed to view all visitors.');
+	  }
+	} catch (error) {
+	  console.error(error);
+	  res.status(500).send('Internal server error.');
+	}
+  });
+  
+
 app.listen(port, () => {
 	console.log(`Example app listening at http://localhost:3000`)
 })
