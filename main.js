@@ -28,7 +28,12 @@ const jwt = require ('jsonwebtoken');
 function generateAccessToken(payload){
 	return jwt.sign(payload, "secretcode", { expiresIn: '7d' });
 }
-
+function authenticateAdmin(username, password) {
+	if (username === 'admin' && password === 'adminpassword') {
+        return true;
+    }
+    return false;
+}
 function verifyToken(req, res, next) {
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];
@@ -102,6 +107,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *       401:
  *         description: Invalid username or password
  */
+
+
+
 
 app.post('/login/user', async (req, res) => {
 	console.log(req.body);
