@@ -30,7 +30,7 @@ class Visitorlog {
 
 		static async update(logno,  dateofvisit, timein, timeout, purpose, officerno){
 				return visitorlog.updateOne({ Logno: logno },{$set:{
-					"InmateNo": inmateno,
+					"EmployeeNo": employeenono,
 							"Dateofvisit": dateofvisit,
 							"Timein": timein,
 							"Timeout": timeout,			
