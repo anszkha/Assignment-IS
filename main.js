@@ -1,5 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const User = require("./user");
+const index = require("./index");
 const Visitor = require("./visitor");
 const Employee = require("./employee");
 const Visitorlog = require("./visitorlog")

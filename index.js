@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
   res.render('login');
 });
 
-app.post('/login', (req, res) => {
+app.post('admin/login', (req, res) => {
   const { username, password } = req.body;
 
   // Dummy authentication (replace with a proper authentication system)
