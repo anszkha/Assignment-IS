@@ -1,6 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
 const User = require("./user");
-const index = require("./index");
 const Visitor = require("./visitor");
 const Employee = require("./employee");
 const Visitorlog = require("./visitorlog")
@@ -23,7 +22,7 @@ MongoClient.connect(
 
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 
 const jwt = require ('jsonwebtoken');
 function generateAccessToken(payload){
@@ -287,7 +286,7 @@ app.use(verifyToken);
  *                 type: integer
  *               username: 
  *                 type: string
- *               inmateno: 
+ *               employeeno: 
  *                 type: string
  *               dateofvisit:
  *                 type: string
@@ -311,7 +310,7 @@ app.use(verifyToken);
  app.post('/register/visitorlog', async (req, res) => {
 	console.log(req.body);
 
-	if (req.user.rank == "officer" || "security"){
+	if (req.user.rank == "officer" || req.user.rank === "security"){
 		const reg = await Visitorlog.register(req.body.logno, req.body.username, req.body.employeeno, req.body.dateofvisit, req.body.timein, req.body.timeout, req.body.purpose, req.body.officerno);
 		res.status(200).send(reg)
 	}
@@ -741,15 +740,16 @@ app.delete('/delete/visitor', async (req, res) => {
  *         description: Internal server error
  */
 
-// Define a route for authenticated hosts to get all visitors
 app.get('/api/visitors', verifyToken, async (req, res) => {
 	try {
-		if (req.user.rank == "officer" || "security") {
-		// Ensure that only hosts can access this route
+	  // Check if the user's rank is either "officer" or "security" for authorization
+	  if (req.user.rank === "officer" || req.user.rank === "security") {
+		// Fetch and send the list of visitors
 		const allVisitors = await Visitor.getAllVisitors();
 		res.status(200).json(allVisitors);
 	  } else {
-		res.status(403).send('Access denied. Only users are allowed to view all visitors.');
+		// Return a 403 Forbidden response for unauthorized users
+		res.status(403).send('Access denied. Only users with the "officer" or "security" rank are allowed.');
 	  }
 	} catch (error) {
 	  console.error(error);
@@ -757,7 +757,8 @@ app.get('/api/visitors', verifyToken, async (req, res) => {
 	}
   });
   
+  
 
 app.listen(port, () => {
-	console.log(`Example app listening at http://localhost:3000`)
+	console.log(`Example app listening at http://localhost:3001`)
 })

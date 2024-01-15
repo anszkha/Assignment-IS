@@ -1,14 +1,14 @@
 ###
 # User Registration Request
 ###
-POST http://localhost:3000/register/user
+POST http://localhost:3001/register/user
 Content-Type: application/json
 
 {
-  "username": "testuser",
-  "password": "testpassword",
-  "name": "Test User",
-  "officerno": "12345",
+  "username": "Fathia",
+  "password": "Fathia123",
+  "name": "Fathia",
+  "officerno": "O1",
   "rank": "officer",
   "phone": "123-456-7890"
 }
@@ -16,26 +16,26 @@ Content-Type: application/json
 ###
 # User Login Request
 ###
-POST http://localhost:3000/login/user
+POST http://localhost:3001/login/user
 Content-Type: application/json
 
 {
-  "username": "testuser",
-  "password": "testpassword"
+  "username": "Fathia",
+  "password": "Fathia123"
 }
 
 ###
 # Visitor Registration Request
 ###
-POST http://localhost:3000/register/visitor
+POST http://localhost:3001/register/visitor
 Content-Type: application/json
 
 {
-  "username": "testvisitor",
-  "password": "testpassword",
-  "name": "Test Visitor",
+  "username": "Zuzana",
+  "password": "Zuzana123",
+  "name": "Zuzana",
   "age": 25,
-  "gender": "Male",
+  "gender": "Female",
   "reason": "Meeting",
   "telno": "987-654-3210"
 }
@@ -43,25 +43,25 @@ Content-Type: application/json
 ###
 # Visitor Login Request
 ###
-POST http://localhost:3000/login/visitor
+POST http://localhost:3001/login/visitor
 Content-Type: application/json
 
 {
-  "username": "testvisitor",
-  "password": "testpassword"
+  "username": "Zuzana",
+  "password": "Zuzana123"
 }
 
 ###
 # Visitorlog Registration Request (requires authentication)
 ###
-POST http://localhost:3000/register/visitorlog
+POST http://localhost:3001/register/visitorlog
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R2aXNpdG9yIiwiaWF0IjoxNzA0NjE3MTU2LCJleHAiOjE3MDUyMjE5NTZ9.wz9jmoBtyfpMqUfY_WxgGC2mU0-klzq7C08giaSbUbc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "logno": 1,
-  "username": "testvisitor",
-  "employeeno": "E12345",
+  "logno": 3,
+  "username": "Zuzana",
+  "employeeno": "E1",
   "dateofvisit": "2024-01-07",
   "timein": "09:00 AM",
   "timeout": "10:00 AM",
@@ -72,14 +72,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 ###
 # User Update Request (requires authentication)
 ###
-PATCH http://localhost:3000/user/update
+PATCH http://localhost:3001/user/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "username": "testuser",
-  "name": "Updated User",
-  "officerno": "54321",
+  "username": "Fathia",
+  "name": "Fathia",
+  "officerno": "O12",
   "rank": "manager",
   "phone": "987-654-3210"
 }
@@ -87,13 +87,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlc
 ###
 # Visitor Update Request (requires authentication)
 ###
-PATCH http://localhost:3000/visitor/update
+PATCH http://localhost:3001/visitor/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "username": "testvisitor",
-  "name": "Updated Visitor",
+  "username": "Zuzana",
+  "name": "Zuzana",
   "age": 30,
   "gender": "Female",
   "reason": "Appointment",
@@ -103,52 +103,52 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlc
 ###
 # Employee Registration Request (requires authentication)
 ###
-POST http://localhost:3000/register/employee
+POST http://localhost:3001/register/employee
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "employeeno": "E54321",
-  "firstname": "John",
-  "lastname": "Doe",
+  "employeeno": "E1",
+  "firstname": "Aida",
+  "lastname": "Aida",
   "age": 35,
-  "gender": "Male",
+  "gender": "Female",
   "position": "Manager"
 }
 
 ###
 # Employee Update Request (requires authentication)
 ###
-PATCH http://localhost:3000/employee/update
+PATCH http://localhost:3001/employee/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "employeeno": "E54321",
-  "firstname": "Updated John",
-  "lastname": "Updated Doe",
+  "employeeno": "E1",
+  "firstname": "Aida",
+  "lastname": "UAida",
   "age": 36,
-  "gender": "Male",
+  "gender": "Female",
   "position": "Senior Manager"
 }
 
 ###
 # Delete User Request (requires authentication)
 ###
-DELETE http://localhost:3000/delete/user
+DELETE http://localhost:3001/delete/user
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "username": "testuser"
+  "username": "Fathiaa"
 }
 
 ###
 # Delete Visitor Request (requires authentication)
 ###
-DELETE http://localhost:3000/delete/visitor
+DELETE http://localhost:3001/delete/visitor
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
   "username": "testvisitor"
@@ -157,26 +157,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlc
 ###
 # Delete Employee Request (requires authentication)
 ###
-DELETE http://localhost:3000/delete/employee
+DELETE http://localhost:3001/delete/employee
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
-  "employeeno": "E54321"
+  "employeeno": "E1"
 }
 
 ###
 # Delete Visitorlog Request (requires authentication)
 ###
-DELETE http://localhost:3000/delete/visitorlog
+DELETE http://localhost:3001/delete/visitorlog
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R2aXNpdG9yIiwiaWF0IjoxNzA0NjE3MTU2LCJleHAiOjE3MDUyMjE5NTZ9.wz9jmoBtyfpMqUfY_WxgGC2mU0-klzq7C08giaSbUbc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
 
 {
   "logno": 1
 }
 
 ### Get All Visitors (for authenticated hosts)
-GET http://localhost:3000/api/visitors
+GET http://localhost:3001/api/visitors
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNDYxNjk0OCwiZXhwIjoxNzA1MjIxNzQ4fQ.k8VLMDPAsez8cZ0YEKwlvykwi_Slg5bip_LorDFDW_Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyYW5rIjoib2ZmaWNlciIsImlhdCI6MTcwNTMyMjI4OCwiZXhwIjoxNzA1OTI3MDg4fQ.xmmKsMqEn2Zol7Hw-htV2ASO9k54Li3_DRemLptOToU
+
